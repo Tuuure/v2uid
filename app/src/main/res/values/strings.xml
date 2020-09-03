@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">V2uid</string>
+    <string name="action_search">搜索</string>
+
+    <string name="menu_item_save">保存</string>
+    <string name="menu_item_clear">清空</string>
+    <string name="menu_item_bypass">绕行模式</string>
+    <string name="menu_item_select_proxy_app">自动选中需代理应用</string>
+
+    <string name="msg_missing_root">未检测到Root环境</string>
+    <string name="msg_save_success">保存成功</string>
+    <string name="msg_downloading_content">正在下载内容</string>
+    <string name="msg_select_app">已选中相关应用</string>
+
+</resources>

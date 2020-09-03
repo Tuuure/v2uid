@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
+
+    <ImageView
+        android:id="@+id/image_icon"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:src="@mipmap/ic_launcher"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/text_app_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:text="AppName"
+        app:layout_constraintBottom_toTopOf="@id/text_pkg_name"
+        app:layout_constraintEnd_toStartOf="@id/state_check"
+        app:layout_constraintStart_toEndOf="@id/image_icon"
+        app:layout_constraintTop_toTopOf="@id/image_icon" />
+
+
+    <TextView
+        android:id="@+id/text_pkg_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="PackageName"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        app:layout_constraintBottom_toTopOf="@id/text_uid"
+        app:layout_constraintEnd_toEndOf="@id/text_app_name"
+        app:layout_constraintStart_toStartOf="@id/text_app_name"
+        app:layout_constraintTop_toBottomOf="@id/text_app_name" />
+
+    <TextView
+        android:id="@+id/text_uid"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="1000"
+        app:layout_constraintBottom_toBottomOf="@id/image_icon"
+        app:layout_constraintEnd_toEndOf="@id/text_app_name"
+        app:layout_constraintStart_toStartOf="@id/text_app_name"
+        app:layout_constraintTop_toBottomOf="@id/text_pkg_name" />
+
+    <CheckBox
+        android:id="@+id/state_check"
+        android:clickable="false"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/image_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/image_icon" />
+</androidx.constraintlayout.widget.ConstraintLayout>
