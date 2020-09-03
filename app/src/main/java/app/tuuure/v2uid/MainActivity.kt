@@ -1,10 +1,12 @@
 package app.tuuure.v2uid
 
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.ArraySet
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        adapter = AppListAdapter(this);
+        adapter = AppListAdapter(this)
         appListView.layoutManager = LinearLayoutManager(this)
         appListView.adapter = adapter
 
@@ -138,6 +140,11 @@ class MainActivity : AppCompatActivity() {
                 updateData(emptyList())
                 true
             }
+            R.id.action_about -> {
+                val intent = Intent(this@MainActivity, AboutActivity::class.java)
+                startActivity(intent)
+                true
+            }
             else -> {
                 super.onOptionsItemSelected(item)
             }
@@ -196,5 +203,7 @@ class MainActivity : AppCompatActivity() {
         }
         adapter.data = checkedList
         adapter.notifyDataSetChanged()
+        text_load.visibility = View.GONE
+        swipeRefresh.visibility = View.VISIBLE
     }
 }
