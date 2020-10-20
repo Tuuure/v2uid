@@ -25,17 +25,22 @@ class AboutActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
+        setUrlText(
+            about_title,
+            getString(R.string.app_name),
+            link = getString(R.string.about_github_link)
+        )
+
         setUrlText(about_thanks_2dust, getString(R.string.about_thanks_2dust))
 
         setUrlText(about_thanks_sirpryderi, getString(R.string.about_thanks_sirpryderi))
 
     }
 
-    private fun setUrlText(view: TextView, name: String) {
-        val url = github_url + name
+    private fun setUrlText(view: TextView, name: String, link: String = name) {
         val ss = SpannableString(name)
         ss.setSpan(
-            URLSpan(url), 0, name.length,
+            URLSpan(github_url + link), 0, name.length,
             Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
         )
         view.text = ss

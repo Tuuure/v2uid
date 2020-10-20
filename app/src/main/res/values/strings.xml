@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">V2uid</string>
 
+    <string name="about_github_link">Tuuure/v2uid</string>
     <string name="about_thanks">使用或参考了以下开源项目的源码</string>
     <string name="about_thanks_2dust">2dust/androidpackagenamelist</string>
     <string name="about_thanks_sirpryderi">SirPryderi/OpenHostsEditor</string>
