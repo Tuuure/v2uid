@@ -1,6 +1,5 @@
 package app.tuuure.v2uid
 
-import android.util.Log
 import java.io.*
 
 /**
@@ -64,7 +63,6 @@ abstract class ExecuteAsRootBase {
 
             // Execute commands that require root access
             for (currCommand in commands) {
-                Log.d("TAG", currCommand)
                 os.writeBytes("$currCommand\n")
                 os.flush()
             }

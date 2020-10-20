@@ -12,9 +12,12 @@
     <string name="menu_item_select_proxy_app">自动选中需代理应用</string>
     <string name="menu_item_about">关于</string>
 
+    <string name="action_retry">重试</string>
     <string name="msg_missing_root">未检测到Root环境</string>
+    <string name="msg_saveing">正在保存....</string>
     <string name="msg_save_success">保存成功</string>
     <string name="msg_downloading_content">正在下载内容</string>
-    <string name="msg_select_app">已选中相关应用</string>
+    <string name="msg_select_app">已选中需代理应用</string>
     <string name="msg_loading">正在载入....</string>
+    <string name="msg_connect_failed">连接失败</string>
 </resources>

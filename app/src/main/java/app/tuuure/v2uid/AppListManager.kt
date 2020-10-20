@@ -47,7 +47,7 @@ class AppListManager {
             mode: PerAppMode,
             appList: Collection<String>
         ): File? {
-            val temp = File(context.getCacheDir(), TEMP_FILE)
+            val temp = File(context.cacheDir, TEMP_FILE)
             val bufferedWriter = BufferedWriter(FileWriter(temp))
             if (mode == PerAppMode.BYPASS_MODE) {
                 bufferedWriter.write(BYPASS_FLAG)
@@ -74,7 +74,8 @@ class AppListManager {
                         commands.add("mv -f ${file.absolutePath} $APPID_LIST_PATH")
                         commands.add("chmod 644 $APPID_LIST_PATH")
                         commands.add("mount -o remount,ro /data")
-                        //commands.add("/sbin/.magisk/img/v2ray/scripts/v2ray.service start")
+                        //commands.add("/sbin/.magisk/img/v2ray/scripts/v2ray.service restart")
+                        commands.add("bash /sbin/.magisk/img/v2ray/scripts/start.sh")
                         commands.add("exit")
                         return commands
                     }

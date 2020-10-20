@@ -19,7 +19,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        private const val androidpackagenamelistUrl =
+        private const val androidPackageNameListUrl =
             "https://raw.githubusercontent.com/2dust/androidpackagenamelist/master/proxy.txt"
     }
 
@@ -57,8 +57,9 @@ class MainActivity : AppCompatActivity() {
         bypassItem = menu.findItem(R.id.action_bypass)
         bypassItem?.isChecked = (mode == PerAppMode.BYPASS_MODE)
 
-        val searchItem: MenuItem? = menu.findItem(R.id.action_search)
-        val queryTextListener = object : SearchView.OnQueryTextListener {
+        val searchView = menu.findItem(R.id.action_search).actionView as SearchView
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 adapter.filter = newText ?: ""
                 adapter.notifyDataSetChanged()
@@ -68,9 +69,8 @@ class MainActivity : AppCompatActivity() {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
-        }
-        val searchView = searchItem?.actionView as SearchView
-        searchView.setOnQueryTextListener(queryTextListener)
+        })
+
         return true
     }
 
@@ -80,28 +80,39 @@ class MainActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.action_search -> false // Not implemented here
             R.id.action_save -> {
-                if (ExecuteAsRootBase.isRootAvailable() and ExecuteAsRootBase.canRunRootCommands()) {
-                    val appIDs = ArraySet<String>(adapter.itemCount)
-                    for (info in adapter.data) {
-                        if (info.isChecked)
-                            appIDs.add(info.uid.toString())
-                    }
-                    val file = AppListManager.saveToTempFile(this, mode, appIDs)
-                    if (file != null) {
-                        if (AppListManager.writeToFile(file)) {
+                Snackbar.make(
+                    rootLayout,
+                    getString(R.string.msg_saveing),
+                    Snackbar.LENGTH_INDEFINITE
+                ).show()
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (ExecuteAsRootBase.isRootAvailable() and ExecuteAsRootBase.canRunRootCommands()) {
+                        val appIDs = ArraySet<String>(adapter.itemCount)
+                        for (info in adapter.data) {
+                            if (info.isChecked)
+                                appIDs.add(info.uid.toString())
+                        }
+                        val file = AppListManager.saveToTempFile(this@MainActivity, mode, appIDs)
+                        if (file != null) {
+                            if (AppListManager.writeToFile(file)) {
+                                withContext(Dispatchers.Main) {
+                                    Snackbar.make(
+                                        rootLayout,
+                                        getString(R.string.msg_save_success),
+                                        Snackbar.LENGTH_LONG
+                                    ).show()
+                                }
+                            }
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
                             Snackbar.make(
                                 rootLayout,
-                                getString(R.string.msg_save_success),
+                                getString(R.string.msg_missing_root),
                                 Snackbar.LENGTH_LONG
                             ).show()
                         }
                     }
-                } else {
-                    Snackbar.make(
-                        rootLayout,
-                        getString(R.string.msg_missing_root),
-                        Snackbar.LENGTH_LONG
-                    ).show()
                 }
                 true
             }
@@ -115,25 +126,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.action_select_proxy_app -> {
-                Snackbar.make(
-                    rootLayout,
-                    getString(R.string.msg_downloading_content),
-                    Snackbar.LENGTH_LONG
-                ).show()
-                CoroutineScope(Dispatchers.Default).launch {
-                    val content = URL(androidpackagenamelistUrl).readText()
-                    val pkgList = content.split("\n")
-                    withContext(Dispatchers.Main) {
-                        if (this@MainActivity::adapter.isInitialized) {
-                            updateData(pkgList, reset = false)
-                            Snackbar.make(
-                                rootLayout,
-                                getString(R.string.msg_select_app),
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                }
+                fetchData()
                 true
             }
             R.id.action_clear -> {
@@ -150,6 +143,39 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+    private fun fetchData() {
+        CoroutineScope(Dispatchers.Main).launch {
+            Snackbar.make(
+                rootLayout,
+                getString(R.string.msg_downloading_content),
+                Snackbar.LENGTH_INDEFINITE
+            ).show()
+            try {
+                var content: String
+                withContext(Dispatchers.Default) {
+                    content = URL(androidPackageNameListUrl).readText()
+                }
+                val pkgList = content.split("\n")
+                if (this@MainActivity::adapter.isInitialized) {
+                    updateData(pkgList, reset = false)
+                    Snackbar.make(
+                        rootLayout,
+                        getString(R.string.msg_select_app),
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                }
+            } catch (error: Exception) {
+                Snackbar.make(
+                    rootLayout,
+                    getString(R.string.msg_connect_failed),
+                    Snackbar.LENGTH_INDEFINITE
+                ).setAction(R.string.action_retry) {
+                    fetchData()
+                }.show()
+            }
+        }
+    }
+
     private fun initData() {
         CoroutineScope(Dispatchers.Default).launch {
             val result = async(Dispatchers.IO) {
@@ -157,7 +183,7 @@ class MainActivity : AppCompatActivity() {
             }
             val appList: LinkedList<AppInfo> = LinkedList()
             val installedPackages =
-                packageManager.getInstalledPackages(PackageManager.GET_UNINSTALLED_PACKAGES)
+                packageManager.getInstalledPackages(PackageManager.GET_ACTIVITIES or PackageManager.GET_SERVICES)
             installedPackages.sortByDescending { it.applicationInfo.uid }
             for (pkgInfo in installedPackages) {
                 val applicationInfo = pkgInfo.applicationInfo
@@ -180,7 +206,6 @@ class MainActivity : AppCompatActivity() {
             withContext(Dispatchers.Main) {
                 bypassItem?.isChecked = (mode == PerAppMode.BYPASS_MODE)
             }
-
         }
     }
 
