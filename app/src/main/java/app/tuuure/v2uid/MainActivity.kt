@@ -1,5 +1,6 @@
 package app.tuuure.v2uid
 
+import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -183,20 +184,22 @@ class MainActivity : AppCompatActivity() {
             }
             val appList: LinkedList<AppInfo> = LinkedList()
             val installedPackages =
-                packageManager.getInstalledPackages(PackageManager.GET_ACTIVITIES or PackageManager.GET_SERVICES)
+                packageManager.getInstalledPackages(PackageManager.GET_PERMISSIONS)
             installedPackages.sortByDescending { it.applicationInfo.uid }
             for (pkgInfo in installedPackages) {
-                val applicationInfo = pkgInfo.applicationInfo
+                if (!pkgInfo.requestedPermissions.isNullOrEmpty() && Manifest.permission.INTERNET in pkgInfo.requestedPermissions) {
+                    val applicationInfo = pkgInfo.applicationInfo
 
-                appList.add(
-                    AppInfo(
-                        applicationInfo.loadLabel(packageManager),
-                        pkgInfo.packageName,
-                        applicationInfo.uid,
-                        applicationInfo.loadIcon(packageManager),
-                        applicationInfo.flags
+                    appList.add(
+                        AppInfo(
+                            applicationInfo.loadLabel(packageManager),
+                            pkgInfo.packageName,
+                            applicationInfo.uid,
+                            applicationInfo.loadIcon(packageManager),
+                            applicationInfo.flags
+                        )
                     )
-                )
+                }
             }
             adapter.data = appList
             withContext(Dispatchers.Main) {
