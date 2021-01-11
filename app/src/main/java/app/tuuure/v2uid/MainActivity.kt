@@ -12,8 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.tuuure.v2uid.AppListManager.Companion.PerAppMode
+import app.tuuure.v2uid.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import java.net.URL
 import java.util.*
@@ -24,29 +24,31 @@ class MainActivity : AppCompatActivity() {
             "https://raw.githubusercontent.com/2dust/androidpackagenamelist/master/proxy.txt"
     }
 
+    private lateinit var binding: ActivityMainBinding
     private lateinit var adapter: AppListAdapter
     private lateinit var result: Pair<PerAppMode, Collection<String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         adapter = AppListAdapter(this)
-        appListView.layoutManager = LinearLayoutManager(this)
-        appListView.adapter = adapter
+        binding.appListView.layoutManager = LinearLayoutManager(this)
+        binding.appListView.adapter = adapter
 
         initData()
 
-        setSupportActionBar(toolBar)
-        toolBar.setOnClickListener {
-            appListView.smoothScrollToPosition(0)
+        setSupportActionBar(binding.toolBar)
+        binding.toolBar.setOnClickListener {
+            binding.appListView.smoothScrollToPosition(0)
         }
 
-        swipeRefresh.setOnRefreshListener {
+        binding.swipeRefresh.setOnRefreshListener {
             if (this::result.isInitialized) {
                 updateData(result.second)
             }
-            swipeRefresh.isRefreshing = false
+            binding.swipeRefresh.isRefreshing = false
         }
     }
 
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity() {
             R.id.action_search -> false // Not implemented here
             R.id.action_save -> {
                 Snackbar.make(
-                    rootLayout,
+                    binding.rootLayout,
                     getString(R.string.msg_saveing),
                     Snackbar.LENGTH_INDEFINITE
                 ).show()
@@ -98,7 +100,7 @@ class MainActivity : AppCompatActivity() {
                             if (AppListManager.writeToFile(file)) {
                                 withContext(Dispatchers.Main) {
                                     Snackbar.make(
-                                        rootLayout,
+                                        binding.rootLayout,
                                         getString(R.string.msg_save_success),
                                         Snackbar.LENGTH_LONG
                                     ).show()
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                     } else {
                         withContext(Dispatchers.Main) {
                             Snackbar.make(
-                                rootLayout,
+                                binding.rootLayout,
                                 getString(R.string.msg_missing_root),
                                 Snackbar.LENGTH_LONG
                             ).show()
@@ -147,7 +149,7 @@ class MainActivity : AppCompatActivity() {
     private fun fetchData() {
         CoroutineScope(Dispatchers.Main).launch {
             Snackbar.make(
-                rootLayout,
+                binding.rootLayout,
                 getString(R.string.msg_downloading_content),
                 Snackbar.LENGTH_INDEFINITE
             ).show()
@@ -160,14 +162,14 @@ class MainActivity : AppCompatActivity() {
                 if (this@MainActivity::adapter.isInitialized) {
                     updateData(pkgList, reset = false)
                     Snackbar.make(
-                        rootLayout,
+                        binding.rootLayout,
                         getString(R.string.msg_select_app),
                         Snackbar.LENGTH_LONG
                     ).show()
                 }
             } catch (error: Exception) {
                 Snackbar.make(
-                    rootLayout,
+                    binding.rootLayout,
                     getString(R.string.msg_connect_failed),
                     Snackbar.LENGTH_INDEFINITE
                 ).setAction(R.string.action_retry) {
@@ -231,7 +233,7 @@ class MainActivity : AppCompatActivity() {
         }
         adapter.data = checkedList
         adapter.notifyDataSetChanged()
-        text_load.visibility = View.GONE
-        swipeRefresh.visibility = View.VISIBLE
+        binding.textLoad.visibility = View.GONE
+        binding.swipeRefresh.visibility = View.VISIBLE
     }
 }
